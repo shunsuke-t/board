@@ -15,6 +15,7 @@ ipython = "==6.2.1"
 django-debug-toolbar = "*"
 django-extensions = "*"
 werkzeug = "*"
+"flake8" = "*"
 
 [requires]
 python_version = "3.6"

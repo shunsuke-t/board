@@ -1,1 +1,4 @@
+# Django stuff:
+*.log
 settings_local.py
+db.sqlite3
