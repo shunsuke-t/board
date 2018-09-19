@@ -1,0 +1,14 @@
+body {
+    background-image: url(../img/vintage-concrete.png);
+}
+
+.logo,
+.logo a {
+    color: rgba(0, 0, 0, .9);
+    font-family: 'Indie Flower', cursive;
+}
+
+.logo a:hover,
+.logo a:active, {
+    text-decoration: none;
+}
