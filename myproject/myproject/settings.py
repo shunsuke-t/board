@@ -130,6 +130,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+LOGOUT_REDIRECT_URL = 'home'
+
 INTERNAL_IPS = ['127.0.0.1', '192.168.33.1']
 
 STATICFILES_DIRS = [
