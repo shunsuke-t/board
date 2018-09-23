@@ -9,7 +9,7 @@ Function views
 Class-based views
     1. Add an import:  from other_app.views import Home
     2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
+Including another URL conf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
@@ -54,10 +54,10 @@ urlpatterns = [
         auth_views.PasswordResetCompleteView.as_view(
             template_name='password_reset_complete.html'
         ),
-        name='password_reset_complete.html'
+        name='password_reset_complete'
     ),
 
-    # use Including another URLconf
+    # use Including another URL conf
     # path('', include('boards.urls')),
     path('boards/<int:pk>/', views.board_topics, name='board_topics'),
     path('boards/<int:pk>/new/', views.new_topic, name='new_topic'),

@@ -38,6 +38,15 @@ class PasswordResetTests(TestCase):
 
 class SuccessfulPasswordResetTests(TestCase):
     def setUp(self):
+        email = 'john@doe.com'
+        User.objects.create_user(
+            username='john', email=email, password='123abcdef')
+        url = reverse('password_reset')
+        sef.responce = self.client.post(url, {'email': email})
+
+
+class InvalidPasswordResetTests(TestCase):
+    def setUp(self):
         url = reverse('password_reset')
         self.response = self.client.post(
             url, {'email': 'do_not_exist@email.com'})
@@ -111,3 +120,42 @@ class PasswordResetConfirmTests(TestCase):
         '''
         self.assertContains(self.response, '<input', 3)
         self.assertContains(self.response, 'type="password"', 2)
+
+
+class invalidPasswordResetConfirmTests(TestCase):
+    def setUp(self):
+        user = User.objects.create_user(
+            username='john', email='john@doe.com', password='123abcedef')
+        uid = urlsafe_base64_encode(force_bytes(user.pk)).decode()
+        token = default_token_generator.make_token(user)
+
+        '''
+        invalidate token by changing the password.
+        '''
+        user.set_password('abcdef123')
+        user.save()
+
+        url = reverse('password_reset_confirm', kwargs={
+                      'uidb64': uid, 'token': token})
+        self.responce = self.client.get(url)
+
+    def test_status_code(self):
+        self.assertEquals(self.responce.status_code, 200)
+
+    def test_no_reset_email_sent(self):
+        self.assertEqual(0, len(mail.outbox))
+
+
+class PasswordResetCompleteTests(TestCase):
+    def setUp(self):
+        url = reverse('password_reset_complete')
+        self.responce = self.client.get(url)
+
+    def test_status_code(self):
+        self.assertEquals(self.responce.status_code, 200)
+
+    def test_view_function(self):
+        view = resolve('/reset/complete/')
+        self.assertEquals(
+            view.func.view_class, auth_views.PasswordResetCompleteView
+        )
