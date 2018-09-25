@@ -28,8 +28,7 @@ class NewTopicTests(TestCase):
     def setUp(self):
         Board.objects.create(name='Django', description='Django board.')
         User.objects.create_user(
-            username='john', email='john@doe.com', password='123'
-        )  # <- included this line here
+            username='john', email='john@doe.com', password='123')
         self.client.login(username='john', password='123')
 
     def test_new_topic_view_success_status_code(self):
@@ -67,7 +66,7 @@ class NewTopicTests(TestCase):
         url = reverse('new_topic', kwargs={'pk': 1})
         data = {
             'subject': 'Test title',
-            'message': 'Lorem ipsum dolor sit a met'
+            'message': 'Lorem ipsum dolor sit amet'
         }
         response = self.client.post(url, data)
         self.assertTrue(Topic.objects.exists())
