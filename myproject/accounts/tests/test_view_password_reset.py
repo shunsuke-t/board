@@ -42,7 +42,17 @@ class SuccessfulPasswordResetTests(TestCase):
         User.objects.create_user(
             username='john', email=email, password='123abcdef')
         url = reverse('password_reset')
-        sef.responce = self.client.post(url, {'email': email})
+        self.responce = self.client.post(url, {'email': email})
+
+    def test_redirection(self):
+        '''
+        A valid form submission should redirect the user to `password_reset_done` view
+        '''
+        url = reverse('password_reset_done')
+        self.assertRedirects(self.responce, url)
+
+    def test_send_password_reset_email(self):
+        self.assertEqual(1, len(mail.outbox))
 
 
 class InvalidPasswordResetTests(TestCase):
