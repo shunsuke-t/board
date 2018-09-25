@@ -9,6 +9,8 @@ django = "==2.0.2"
 "autopep8" = "*"
 django-extensions = "*"
 django-widget-tweaks = "*"
+coverage = "*"
+django-coverage-plugin = "*"
 
 [dev-packages]
 ipython = "==6.2.1"

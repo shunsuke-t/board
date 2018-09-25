@@ -4,4 +4,4 @@ settings_local.py
 db.sqlite3
 /.vscode/
 __pycache__
-
+.coverage*
