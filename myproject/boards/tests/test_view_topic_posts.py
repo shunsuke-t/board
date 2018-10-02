@@ -9,7 +9,7 @@ from ..views import topic_posts
 class TopicPostsTests(TestCase):
     def setUp(self):
         board = Board.objects.create(
-            name='Django', description='Djando Board.')
+            name='Django', description='Django Board.')
         user = User.objects.create_user(
             username='john',
             email='john@doe.com',
