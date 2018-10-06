@@ -1,28 +1,68 @@
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import UpdateView
+from django.views.generic import UpdateView, ListView
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from .forms import NewTopicForm, PostForm
 from .models import Board, Topic, Post
 
 
-def home(request):
-    boards = Board.objects.all()
-    return render(request, 'home.html', {'boards': boards})
+# # use function
+# def home(request):
+#     boards = Board.objects.all()
+#     return render(request, 'home.html', {'boards': boards})
+
+class BoardListView(ListView):
+    model = Board
+    context_object_name = 'boards'
+    template_name = 'home.html'
+
+# # usefunction
+# def board_topics(request, pk):
+#     # try:
+#     #     board = Board.objects.get(pk=pk)
+#     # except Board.DoesNotExist:
+#     #     raise Http404
+#     # board = Board.objects.get(pk=pk)  # for runserver-plus
+#     board = get_object_or_404(Board, pk=pk)  # for slave
+#     queryset = board.topics.order_by(
+#         '-last_updated').annotate(replies=Count('posts') - 1)
+#     page = request.GET.get('page', 1)
+
+#     paginator = Paginator(queryset, 20)
+
+#     try:
+#         topics = paginator.page(page)
+#     except pageNotAnInteger:
+#         # fallback to the first page
+#         topics = paginator.page(1)
+#     except EmptyPage:
+#         # probably the user tried to add a page number
+#         # in the url, so we fallback to the last page
+#         topics = paginator.page(paginator.num_pages)
+
+#     return render(request, 'topics.html', {'board': board, 'topics': topics})
+
+# use Generic
 
 
-def board_topics(request, pk):
-    # try:
-    #     board = Board.objects.get(pk=pk)
-    # except Board.DoesNotExist:
-    #     raise Http404
-    # board = Board.objects.get(pk=pk)  # for runserver-plus
-    board = get_object_or_404(Board, pk=pk)  # for slave
-    topics = board.topics.order_by(
-        '-last_updated').annotate(replies=Count('posts') - 1)
-    return render(request, 'topics.html', {'board': board, 'topics': topics})
+class TopicListView(ListView):
+    mode = Topic
+    context_object_name = 'topics'
+    template_name = 'topics.html'
+    paginate_by = 20
+
+    def get_context_data(self, **kwargs):
+        kwargs['board'] = self.board
+        return super().get_context_data(**kwargs)
+
+    def get_queryset(self):
+        self.board = get_object_or_404(Board, pk=self.kwargs.get('pk'))
+        queryset = self.board.topics.order_by(
+            '-last_updated').annotate(replies=Count('posts') - 1)
+        return queryset
 
 
 @login_required
@@ -48,12 +88,35 @@ def new_topic(request, pk):
         form = NewTopicForm()
     return render(request, 'new_topic.html', {'board': board, 'form': form})
 
+# # use function
+# def topic_posts(request, pk, topic_pk):
+#     topic = get_object_or_404(Topic, board__pk=pk, pk=topic_pk)
+#     topic.views += 1
+#     topic.save()
+#     return render(request, 'topic_posts.html', {'topic': topic})
 
-def topic_posts(request, pk, topic_pk):
-    topic = get_object_or_404(Topic, board__pk=pk, pk=topic_pk)
-    topic.views += 1
-    topic.save()
-    return render(request, 'topic_posts.html', {'topic': topic})
+# use Generic
+
+
+class PostListView(ListView):
+    model = Post
+    context_object_name = 'posts'
+    template_name = 'topic_posts.html'
+    paginate_by = 2
+
+    def get_context_data(self, **kwargs):
+        self.topic.views += 1
+        self.topic.save()
+        kwargs['topic'] = self.topic
+        return super().get_context_data(**kwargs)
+
+    def get_queryset(self):
+        self.topic = get_object_or_404(Topic,
+                                       board__pk=self.kwargs.get('pk'),
+                                       pk=self.kwargs.get('topic_pk')
+                                       )
+        queryset = self.topic.posts.order_by('created_at')
+        return queryset
 
 
 @login_required
