@@ -15,6 +15,7 @@ Including another URL conf
 """
 from django.contrib import admin
 from django.conf import settings, urls
+from django.conf.urls import url
 from django.urls import include, path
 from django.contrib.auth import views as auth_views
 from accounts import views as accounts_views
@@ -69,6 +70,8 @@ urlpatterns = [
          ),
          name='password_change_done'
          ),
+    path('settings/account/',
+         accounts_views.UserUpdateView.as_view(), name='my_account'),
     # use Including another URL conf
     # path('', include('boards.urls')),
     # # use function
