@@ -14,7 +14,7 @@ Including another URL conf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.conf import settings
+from django.conf import settings, urls
 from django.urls import include, path
 from django.contrib.auth import views as auth_views
 from accounts import views as accounts_views
@@ -73,6 +73,8 @@ urlpatterns = [
     path('boards/<int:pk>/new/', views.new_topic, name='new_topic'),
     path('boards/<int:pk>/topics/<int:topic_pk>/',
          views.topic_posts, name='topic_posts'),
+    path('boards/<int:pk>/topics/<int:topic_pk>/posts/<int:post_pk>/edit/',
+         views.PostUpdateView.as_view(), name='edit_post'),
     path('boards/<int:pk>/topics/<int:topic_pk>/reply/',
          views.reply_topic, name='reply_topic'),
     path('admin/', admin.site.urls),
